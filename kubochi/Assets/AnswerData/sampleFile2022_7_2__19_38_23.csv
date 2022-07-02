@@ -1,1 +1,4 @@
 canvas_name,valence_score,arousal_score,dominance_score
+SAM_Self,3,4,5
+IOS,6
+SAM_Other,2,5,4

@@ -4,15 +4,14 @@ using System.Collections;
 using System.Linq;
 using System.IO;
 
-public class SubmitButton : MonoBehaviour
+public class SubmitButtonForIOS : MonoBehaviour
 {
 
     //連携するGameObject
-    public ToggleGroup valence_toggleGroup;
-    public ToggleGroup arousal_toggleGroup;
-    public ToggleGroup dominance_toggleGroup;
+    public ToggleGroup ios_toggleGroup;
 
     GameObject parentGameObject;
+    // GameObject vivePointer;
     GameObject CanvasController;
 
     StreamWriter sw;
@@ -21,6 +20,7 @@ public class SubmitButton : MonoBehaviour
     void Start()
     {
         parentGameObject = this.gameObject.transform.parent.gameObject;
+        // vivePointer = GameObject.Find("VivePointers");
         CanvasController = GameObject.Find("CanvasController");
         sw = CanvasController.GetComponent<CanvasController>().sw;
     }
@@ -32,28 +32,20 @@ public class SubmitButton : MonoBehaviour
     public void onClick()
     {
         //Get the label in activated toggles
-        string selectedLabel_v = valence_toggleGroup.ActiveToggles()
+        string selectedLabel_i = ios_toggleGroup.ActiveToggles()
             .First().GetComponentsInChildren<Text>()
             .First(t => t.name == "Label").text;
 
-        string selectedLabel_a = arousal_toggleGroup.ActiveToggles()
-            .First().GetComponentsInChildren<Text>()
-            .First(t => t.name == "Label").text;
+        Debug.Log(selectedLabel_i);
 
-
-        string selectedLabel_d = dominance_toggleGroup.ActiveToggles()
-            .First().GetComponentsInChildren<Text>()
-            .First(t => t.name == "Label").text;
-
-        Debug.Log(selectedLabel_v + selectedLabel_a + selectedLabel_d);
-
-        if (selectedLabel_v != "null" && selectedLabel_a != "null" && selectedLabel_d != "null")
+        if (selectedLabel_i != "null")
         {
             sw = CanvasController.GetComponent<CanvasController>().sw;
             string question_name = parentGameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.name;
-            string[] id_array = new string[] { question_name, selectedLabel_v, selectedLabel_a, selectedLabel_d }; 
+            string[] id_array = new string[] { question_name, selectedLabel_i }; 
             sw.WriteLine(string.Join(",", id_array));
             parentGameObject.SetActive(false);
+            // vivePointer.SetActive(false);
             int canvas_counter = CanvasController.GetComponent<CanvasController>().canvas_counter;
             CanvasController.GetComponent<CanvasController>().canvas_counter = canvas_counter + 1;
         }

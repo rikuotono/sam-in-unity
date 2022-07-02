@@ -5,68 +5,76 @@ using System.IO;
 using System;
 using UnityEngine.UI;
 
+
 public class CanvasController : MonoBehaviour
 {
-    [SerializeField]
-    int canvas_number = 1;
+    public int canvas_number = 1;
 
-    [SerializeField] private float interval = 1.0f;
+    [NonSerialized] public int canvas_counter = 0;
 
-    List<GameObject> list_canvas = new List<GameObject>();
-
-    int canvas_counter = 0;
-    float time_duration = 0.0f;
-
-    // GameObject vivePointer;
+    GameObject[] list_canvas;
 
     public StreamWriter sw;
 
     CanvasGroup canvasGroup;
+    
+    private GameObject _canvas_scale_change_to_2;
 
     // Start is called before the first frame update
     void Start()
     {
-        // vivePointer = GameObject.Find("VivePointers");
+        list_canvas = new GameObject[canvas_number];
 
         var sampleData = "SampleText";
         CSVSave(sampleData, "sampleFile");
 
         for (int i = 0; i < canvas_number; i++)
         {
-            list_canvas.Add(GameObject.Find("Canvas_" + i));
+            list_canvas[i] = GameObject.Find("Canvas_" + i);
         }
         
         foreach (GameObject g in list_canvas)
         {
             g.SetActive(false);
         }
+        
+        Shuffle(list_canvas);
 
-        list_canvas[0].SetActive(true);
-        canvasGroup = list_canvas[0].GetComponent<CanvasGroup>();
-        canvasGroup.alpha = 0.00f;
+        list_canvas[canvas_counter].SetActive(true);
+        canvasGroup = list_canvas[canvas_counter].GetComponent<CanvasGroup>();
+
+        _canvas_scale_change_to_2 = GameObject.Find("Canvas_Scale_Change_to_2");
+        
+        _canvas_scale_change_to_2.SetActive(false);
+    }
+    
+    void Shuffle(GameObject[] num) 
+    {
+        for (int i = 0; i < num.Length; i++)
+        {
+            //（説明１）現在の要素を預けておく
+            GameObject temp = num[i]; 
+            //（説明２）入れ替える先をランダムに選ぶ
+            int randomIndex = UnityEngine.Random.Range(0, num.Length); 
+            //（説明３）現在の要素に上書き
+            num[i] = num[randomIndex]; 
+            //（説明４）入れ替え元に預けておいた要素を与える
+            num[randomIndex] = temp; 
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (canvasGroup.alpha < 1.0f)
+        if (canvas_counter < canvas_number)
         {
-            canvasGroup.alpha += 0.01f;
-        }
-
-        if (list_canvas[canvas_counter].activeSelf == false)
-        {
-            time_duration += Time.deltaTime;
-        }
-
-        if (time_duration > interval)
-        {
-            list_canvas[canvas_counter + 1].SetActive(true);
-            // vivePointer.SetActive(true);
-            canvas_counter += 1;
-            time_duration = 0.0f;
+            list_canvas[canvas_counter].SetActive(true);
             canvasGroup = list_canvas[canvas_counter].GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0.00f;
+        }
+            
+        if (canvas_counter == canvas_number)
+        {
+            _canvas_scale_change_to_2.SetActive(true);
         }
     }
 
